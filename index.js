@@ -1,15 +1,8 @@
-const getEmptyLocation = () => ({
-  href: undefined,
-  protocol: undefined,
-  host: undefined,
-  hostname: undefined,
-  port: undefined,
-  pathname: undefined,
-  search: undefined,
-  origin: undefined
-});
-
-function getLocationFromHeaders(headers){
+function setLocationFromHeaders(req){
+  if(mustSetLocation(req)){
+    return null;
+  }
+  const { headers } = req
   try{
     const href = headers.referer;
     const [protocol, url] = href.split('//');
@@ -18,7 +11,7 @@ function getLocationFromHeaders(headers){
     const uri = '/'+urlArr.join('/');
     const [pathname, search] = uri.split('?');
     const [hostname, port] = host.split(':');
-    return {
+    global.Location = {
       href: href,
       protocol: protocol,
       host: host,
@@ -29,30 +22,17 @@ function getLocationFromHeaders(headers){
       origin: `${protocol}//${host}`
     };
   }
-  catch(e){
-    return getEmptyLocation()
-  }
-}
-
-function setGlobalWindow(){
-  if(typeof(window) === 'undefined'){
-    global.window = {}
-  }
+  catch(e){}
 }
 
 function mustSetLocation(req){
-  if(req.url.indexOf('/_next') >= 0){
+  if(!req.headers || req.url.substr(0, 7) === '/_next/'){
     return false;
   }
   return !!req.headers.referer;
 }
 
 module.exports = () => (req, res, next) => {
-  if(mustSetLocation(req)){
-    global.location = getLocationFromHeaders(req.headers)
-    setGlobalWindow()
-    global.window.location = global.location
-  }
+  setLocationFromHeaders(req)
   next();
 };
-
