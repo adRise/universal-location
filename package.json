@@ -1,6 +1,6 @@
 {
-  "name": "universal-location",
-  "version": "1.0.0",
+  "name": "universal-location-middleware",
+  "version": "1.0.1",
   "description": "NodeJs compatibility with window.location from browser.",
   "main": "index.js",
   "scripts": {
@@ -14,7 +14,9 @@
     "nodejs",
     "location",
     "compatibility",
-    "browser"
+    "browser",
+    "express",
+    "middleware"
   ],
   "author": "AndreAntunesVieira",
   "license": "ISC",
