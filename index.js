@@ -1,3 +1,13 @@
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+if(typeof(window) !== 'undefined' && typeof(window.location) !== 'undefined'){
+  global.Location = window.location;
+}
+
 function setLocationFromHeaders(req){
   if(mustSetLocation(req)){
     return null;
@@ -11,7 +21,7 @@ function setLocationFromHeaders(req){
     const uri = '/'+urlArr.join('/');
     const [pathname, search] = uri.split('?');
     const [hostname, port] = host.split(':');
-    global.Location = {
+    exports.default = global.Location = {
       href: href,
       protocol: protocol,
       host: host,
@@ -32,7 +42,9 @@ function mustSetLocation(req){
   return !!req.headers.referer;
 }
 
-module.exports = () => (req, res, next) => {
+exports.middleware = () => (req, res, next) => {
   setLocationFromHeaders(req)
   next();
 };
+
+exports.default = global.Location
