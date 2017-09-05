@@ -61,4 +61,4 @@ exports.middleware = function(){
 
 exports.setUrl = setUrl;
 
-exports.default = {}
+exports.default = global.Location;
