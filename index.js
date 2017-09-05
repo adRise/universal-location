@@ -12,15 +12,21 @@ function setLocationFromHeaders(req){
   if(mustSetLocation(req)){
     return null;
   }
-  const { headers } = req
+  const headers = req.headers
   try{
     const href = headers.referer;
-    const [protocol, url] = href.split('//');
+    const hrefArr = href.split('//');
+    const protocol = hrefArr[0];
+    const url = hrefArr[1]
     const urlArr = url.split('/');
     const host = urlArr.shift();
-    const uri = '/'+urlArr.join('/');
-    const [pathname, search] = uri.split('?');
-    const [hostname, port] = host.split(':');
+    const uri = '/' + urlArr.join('/');
+    const uriArr = uri.split('?');
+    const pathname = uriArr[0];
+    const search = uriArr[1];
+    const hostArr = host.split(':');
+    const hostname = hostArr[0];
+    const port = hostArr[1];
     exports.default = global.Location = {
       href: href,
       protocol: protocol,
@@ -29,10 +35,11 @@ function setLocationFromHeaders(req){
       port: port || '',
       pathname: pathname,
       search: search ? '?' + search : '',
-      origin: `${protocol}//${host}`
+      origin: protocol + '//' + host
     };
   }
-  catch(e){}
+  catch(e){
+  }
 }
 
 function mustSetLocation(req){
@@ -42,9 +49,11 @@ function mustSetLocation(req){
   return !!req.headers.referer;
 }
 
-exports.middleware = () => (req, res, next) => {
-  setLocationFromHeaders(req)
-  next();
+exports.middleware = function(){
+  return function(req, res, next){
+    setLocationFromHeaders(req)
+    next();
+  }
 };
 
-exports.default = global.Location
+exports.default = {}
