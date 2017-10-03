@@ -31,27 +31,15 @@ function mustSetLocation(req){
 }
 
 function setUrl(href){
-  const hrefArr = href.split('//');
-  const protocol = hrefArr[0];
-  const url = hrefArr[1]
-  const urlArr = url.split('/');
-  const host = urlArr.shift();
-  const uri = '/' + urlArr.join('/');
-  const uriArr = uri.split('?');
-  const pathname = uriArr[0];
-  const search = uriArr[1];
-  const hostArr = host.split(':');
-  const hostname = hostArr[0];
-  const port = hostArr[1];
-  exports.default = global.Location = {
+  return exports.default = global.Location = {
     href: href,
-    protocol: protocol,
-    host: host,
-    hostname: hostname,
-    port: port || '',
-    pathname: pathname,
-    search: search ? '?' + search : '',
-    origin: protocol + '//' + host
+    protocol: getProtocol(href),
+    host: getHost(href),
+    hostname: getHostName(href),
+    port: getPort(href),
+    pathname: getPathname(href),
+    search: getSearch(href),
+    origin: getProtocol(href) + '//' + getHost(href)
   };
 }
 
@@ -65,6 +53,41 @@ exports.middleware = function(){
 exports.setUrl = setUrl;
 
 exports.default = global.Location;
+
+function getSearch(href){
+  const searchArr = href.split('?')
+  if(searchArr.length <= 1){
+    return ''
+  }
+  searchArr.shift()
+  return searchArr.join('?')
+}
+
+function getProtocol(href){
+  return href.split('//').shift();
+}
+
+function getHost(href){
+  let partial = href.split('://')
+  partial.shift()
+  return partial.join('://').split('?').shift().split('/').shift()
+}
+
+function getHostName(href){
+  return getHost(href).split(':').shift()
+}
+
+function getPort(href){
+  const [host, port] = getHost(href).split(':')
+  return port | ''
+}
+
+function getPathname(href){
+  const host = getHost(href)
+  let a = href.split('?').shift().split(host)
+  a.shift()
+  return a.join(host).split('?').shift() || '/'
+}
 
 function defaultLocation(){
   return {
