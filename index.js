@@ -7,6 +7,9 @@ Object.defineProperty(exports, "__esModule", {
 if(typeof(window) !== 'undefined' && typeof(window.location) !== 'undefined'){
   global.Location = window.location;
 }
+else{
+  global.Location = defaultLocation()
+}
 
 function setLocationFromHeaders(req){
   if(mustSetLocation(req)){
@@ -62,3 +65,16 @@ exports.middleware = function(){
 exports.setUrl = setUrl;
 
 exports.default = global.Location;
+
+function defaultLocation(){
+  return {
+    href: '',
+    protocol: '',
+    host: '',
+    hostname: '',
+    port: '',
+    pathname: '',
+    search: '',
+    origin: ''
+  }
+}
