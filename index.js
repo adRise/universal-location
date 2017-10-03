@@ -49,7 +49,7 @@ function getSearch(href){
     return ''
   }
   searchArr.shift()
-  return searchArr.join('?')
+  return '?' + searchArr.join('?')
 }
 
 function getProtocol(href){
