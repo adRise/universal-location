@@ -15,7 +15,7 @@ function setLocationFromHeaders(req){
   if(mustSetLocation(req)){
     return null;
   }
-  const headers = req.headers
+  var headers = req.headers
   try{
     setUrl(headers.referer);
   }
@@ -43,19 +43,8 @@ function setUrl(href){
   };
 }
 
-exports.middleware = function(){
-  return function(req, res, next){
-    setLocationFromHeaders(req)
-    next();
-  }
-};
-
-exports.setUrl = setUrl;
-
-exports.default = global.Location;
-
 function getSearch(href){
-  const searchArr = href.split('?')
+  var searchArr = href.split('?')
   if(searchArr.length <= 1){
     return ''
   }
@@ -68,7 +57,7 @@ function getProtocol(href){
 }
 
 function getHost(href){
-  let partial = href.split('://')
+  var partial = href.split('://')
   partial.shift()
   return partial.join('://').split('?').shift().split('/').shift()
 }
@@ -78,13 +67,13 @@ function getHostName(href){
 }
 
 function getPort(href){
-  const [host, port] = getHost(href).split(':')
-  return port | ''
+  var hrefArr = getHost(href).split(':')
+  return hrefArr[1] || ''
 }
 
 function getPathname(href){
-  const host = getHost(href)
-  let a = href.split('?').shift().split(host)
+  var host = getHost(href)
+  var a = href.split('?').shift().split(host)
   a.shift()
   return a.join(host).split('?').shift() || '/'
 }
@@ -101,3 +90,14 @@ function defaultLocation(){
     origin: ''
   }
 }
+
+function middleware(){
+  return function(req, res, next){
+    setLocationFromHeaders(req)
+    next();
+  }
+}
+
+exports.middleware = middleware;
+exports.setUrl = setUrl;
+exports.default = global.Location;
