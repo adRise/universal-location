@@ -11,13 +11,13 @@ else{
   global.Location = defaultLocation()
 }
 
-function setLocationFromHeaders(req){
+function setLocationFromHeaders(req, res){
   if(mustSetLocation(req)){
     return null;
   }
   var headers = req.headers
   try{
-    setUrl(headers.referer);
+    setUrl(headers.referer, res);
   }
   catch(e){
   }
@@ -30,7 +30,7 @@ function mustSetLocation(req){
   return !!req.headers.referer;
 }
 
-function setUrl(href){
+function setUrl(href, res){
   return exports.default = global.Location = {
     href: href,
     protocol: getProtocol(href),
@@ -39,8 +39,26 @@ function setUrl(href){
     port: getPort(href),
     pathname: getPathname(href),
     search: getSearch(href),
-    origin: getProtocol(href) + '//' + getHost(href)
+    origin: getProtocol(href) + '//' + getHost(href),
+    replace: replace(res),
   };
+}
+
+function replace(res){
+  return function(uri){
+    if(res && typeof(res.redirect) === 'function') {
+      try{
+        return res.redirect(302, uri)
+      }
+      catch(e){
+        console.log('Trying to redirect before write on body!')
+        return undefined
+      }
+    }
+    if(typeof(location) !== 'undefined' && typeof(location.replace) === 'function'){
+      location.replace(url)
+    }
+  }
 }
 
 function getSearch(href){
@@ -87,13 +105,14 @@ function defaultLocation(){
     port: '',
     pathname: '',
     search: '',
-    origin: ''
+    origin: '',
+    replace: function(){},
   }
 }
 
 function middleware(){
   return function(req, res, next){
-    setLocationFromHeaders(req)
+    setLocationFromHeaders(req, res)
     next();
   }
 }
