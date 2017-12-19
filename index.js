@@ -23,7 +23,7 @@ function setLocationFromHeaders(req, res){
 }
 
 function mustNotSetLocation(req){
-  return req.url.substr(0, 7) === '/_next/';
+  return req && req.url.substr(0, 7) === '/_next/' && typeof(req.get) === 'function';
 }
 
 function setUrl(req, res){
