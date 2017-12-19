@@ -12,26 +12,23 @@ else{
 }
 
 function setLocationFromHeaders(req, res){
-  if(mustSetLocation(req)){
+  if(mustNotSetLocation(req)){
     return null;
   }
-  var headers = req.headers
   try{
-    setUrl(headers.referer, res);
+    setUrl(req, res);
   }
   catch(e){
   }
 }
 
-function mustSetLocation(req){
-  if(!req.headers || req.url.substr(0, 7) === '/_next/'){
-    return false;
-  }
-  return !!req.headers.referer;
+function mustNotSetLocation(req){
+  return req.url.substr(0, 7) === '/_next/';
 }
 
-function setUrl(href, res){
-  return exports.default = global.Location = {
+function setUrl(req, res){
+  const href = req.protocol + '://' + req.get('host') + req.originalUrl
+  return exports.default = global.Location = req.Location = {
     href: href,
     protocol: getProtocol(href),
     host: getHost(href),
