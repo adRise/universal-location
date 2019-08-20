@@ -27,7 +27,7 @@ function mustNotSetLocation(req){
 }
 
 function setUrl(req, res){
-  const href = req.protocol + '://' + req.get('host') + req.originalUrl
+  var href = req.protocol + '://' + req.get('host') + req.originalUrl
   return exports.default = global.Location = req.Location = {
     href: href,
     protocol: getProtocol(href),
